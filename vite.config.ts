@@ -11,6 +11,7 @@ export default defineConfig({
   plugins: [
     react(),
     replace({
+      preventAssignment: true,
       "process.env.API_URL": JSON.stringify(process.env.API_URL),
       "process.env.WS_URL": JSON.stringify(process.env.WS_URL),
     }),
