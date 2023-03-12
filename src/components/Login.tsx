@@ -15,7 +15,7 @@ const Login = () => {
   const [loginMutation] = useLoginMutation({
     onCompleted: (data) => {
       if (data.login.token) {
-        login(data);
+        login(data.login);
         navigate(from, { replace: true });
       }
     },

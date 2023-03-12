@@ -1,4 +1,4 @@
-import { Data } from 'api/mutation/login';
+import { AuthResponse } from 'api/gql/graphql';
 import {
   createContext,
   ReactNode,
@@ -8,13 +8,13 @@ import {
 } from 'react';
 
 export type AuthContextType = {
-  isLoggedIn: Data | null;
-  login: (value: Data) => void;
+  user: AuthResponse | null;
+  login: (value: AuthResponse) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
-  isLoggedIn: null,
+  user: null,
   login: () => {},
   logout: () => {},
 });
@@ -23,20 +23,40 @@ type Props = {
   children: ReactNode;
 };
 
+const setPersistUser = (value: AuthResponse | null) => {
+  localStorage.setItem('user', JSON.stringify(value));
+};
+
+const getPersistUser = (): AuthResponse | null => {
+  const token = localStorage.getItem('user');
+
+  if (token) {
+    return JSON.parse(token) as AuthResponse;
+  }
+
+  return null;
+};
+
 export const AuthProvider = ({ children }: Props) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<Data | null>(null);
+  const [user, setUser] = useState<AuthResponse | null>(getPersistUser());
 
-  const login = useCallback((value: Data) => setIsLoggedIn(value), []);
+  const login = useCallback((value: AuthResponse) => {
+    setPersistUser(value);
+    setUser(value);
+  }, []);
 
-  const logout = useCallback(() => setIsLoggedIn(null), []);
+  const logout = useCallback(() => {
+    setPersistUser(null);
+    setUser(null);
+  }, []);
 
   const value = useMemo(
     () => ({
-      isLoggedIn,
+      user,
       login,
       logout,
     }),
-    [isLoggedIn, login, logout]
+    [user, login, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
