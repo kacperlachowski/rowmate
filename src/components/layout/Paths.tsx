@@ -1,4 +1,3 @@
-import ViewListIcon from '@mui/icons-material/ViewList';
 import { MenuItem } from '@mui/material';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -13,7 +12,7 @@ type Props = {
 const Paths = ({ paths, onClick = undefined }: Props) => {
   return (
     <>
-      {paths.map((item) => (
+      {paths.map(({ icon: Icon, ...item }) => (
         <MenuItem
           onClick={onClick}
           key={item.id}
@@ -21,7 +20,7 @@ const Paths = ({ paths, onClick = undefined }: Props) => {
           component={Link}
         >
           <ListItemIcon>
-            <ViewListIcon fontSize="small" />
+            <Icon fontSize="small" />
           </ListItemIcon>
           <ListItemText>{item.label}</ListItemText>
         </MenuItem>

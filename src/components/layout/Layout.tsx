@@ -1,6 +1,8 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import {
   Button,
   LinearProgress,
@@ -30,6 +32,7 @@ const staticPaths: Path[] = [
     id: 'home',
     label: 'Home',
     path: '/',
+    icon: HomeIcon,
   },
 ];
 
@@ -48,6 +51,7 @@ const Layout = () => {
           id: item.id,
           label: item.name,
           path: `/table/${item.id}`,
+          icon: ViewListIcon,
         }));
         setPaths([...tablesPaths]);
       }
