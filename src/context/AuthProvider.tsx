@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { getPersistUser, setPersistUser } from '../utils/user-state';
 
 export type AuthContextType = {
   user: AuthResponse | null;
@@ -21,20 +22,6 @@ const AuthContext = createContext<AuthContextType>({
 
 type Props = {
   children: ReactNode;
-};
-
-const setPersistUser = (value: AuthResponse | null) => {
-  localStorage.setItem('user', JSON.stringify(value));
-};
-
-const getPersistUser = (): AuthResponse | null => {
-  const token = localStorage.getItem('user');
-
-  if (token) {
-    return JSON.parse(token) as AuthResponse;
-  }
-
-  return null;
 };
 
 export const AuthProvider = ({ children }: Props) => {
