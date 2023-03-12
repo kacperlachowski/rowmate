@@ -28,6 +28,13 @@ module.exports = {
         unnamedComponents: 'arrow-function',
       },
     ],
+    'react/require-default-props': [
+      'error',
+      {
+        forbidDefaultForRequired: true,
+        ignoreFunctionalComponents: true,
+      },
+    ],
   },
   settings: {
     'import/resolver': {
