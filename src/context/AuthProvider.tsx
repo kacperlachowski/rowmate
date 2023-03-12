@@ -1,3 +1,4 @@
+import { Data } from 'api/mutation/login';
 import {
   createContext,
   ReactNode,
@@ -5,11 +6,10 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { AuthResponse } from '../api/gql/graphql';
 
 export type AuthContextType = {
-  isLoggedIn: AuthResponse | null;
-  login: (value: AuthResponse) => void;
+  isLoggedIn: Data | null;
+  login: (value: Data) => void;
   logout: () => void;
 };
 
@@ -24,9 +24,9 @@ type Props = {
 };
 
 export const AuthProvider = ({ children }: Props) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<AuthResponse | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<Data | null>(null);
 
-  const login = useCallback((value: AuthResponse) => setIsLoggedIn(value), []);
+  const login = useCallback((value: Data) => setIsLoggedIn(value), []);
 
   const logout = useCallback(() => setIsLoggedIn(null), []);
 

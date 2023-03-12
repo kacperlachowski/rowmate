@@ -1,5 +1,5 @@
 import { gql, MutationHookOptions, useMutation } from '@apollo/client';
-import { AuthResponse, MutationLoginArgs } from '../gql/graphql';
+import { Mutation, MutationLoginArgs } from 'api/gql/graphql';
 
 const MUTATION = gql`
   mutation Mutation($username: String!, $password: String!) {
@@ -13,10 +13,12 @@ const MUTATION = gql`
   }
 `;
 
+export type Data = Pick<Mutation, 'login'>;
+
 const useLoginMutation = (
-  options?: MutationHookOptions<AuthResponse, MutationLoginArgs>
+  options?: MutationHookOptions<Data, MutationLoginArgs>
 ) => {
-  return useMutation<AuthResponse, MutationLoginArgs>(MUTATION, options);
+  return useMutation<Data, MutationLoginArgs>(MUTATION, options);
 };
 
 export default useLoginMutation;

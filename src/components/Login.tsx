@@ -14,14 +14,13 @@ const Login = () => {
 
   const [loginMutation] = useLoginMutation({
     onCompleted: (data) => {
-      console.log(data);
-      if (data.token) {
+      if (data.login.token) {
         login(data);
         navigate(from, { replace: true });
       }
     },
     onError: (error) => {
-      console.log(error);
+      console.log(error.message);
     },
   });
 
