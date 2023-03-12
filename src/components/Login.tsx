@@ -1,16 +1,16 @@
-import { useCallback, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import useLoginMutation from "../api/mutation/login";
-import useAuth from "../hooks/useAuth";
+import { useCallback, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import useLoginMutation from '../api/mutation/login';
+import useAuth from '../hooks/useAuth';
 
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || '/';
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const [loginMutation] = useLoginMutation({
     onCompleted: (data) => {
@@ -49,7 +49,7 @@ const Login = () => {
         },
       });
     },
-    [username, password]
+    [loginMutation, username, password]
   );
 
   return (
@@ -60,7 +60,6 @@ const Login = () => {
         <input
           type="text"
           name="username"
-          role="textbox"
           placeholder="username"
           value={username}
           onChange={handleChangeUsername}
@@ -68,12 +67,11 @@ const Login = () => {
         <input
           type="password"
           name="password"
-          role="textbox"
           placeholder="password"
           value={password}
           onChange={handleChangePassword}
         />
-        <button>Login</button>
+        <button type="submit">Login</button>
       </form>
     </>
   );

@@ -1,5 +1,11 @@
-import { createContext, ReactNode, useCallback, useState } from "react";
-import { AuthResponse } from "../api/gql/graphql";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
+import { AuthResponse } from '../api/gql/graphql';
 
 export type AuthContextType = {
   isLoggedIn: AuthResponse | null;
@@ -24,11 +30,16 @@ export const AuthProvider = ({ children }: Props) => {
 
   const logout = useCallback(() => setIsLoggedIn(null), []);
 
-  return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      isLoggedIn,
+      login,
+      logout,
+    }),
+    [isLoggedIn, login, logout]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;

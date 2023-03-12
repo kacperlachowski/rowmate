@@ -1,5 +1,5 @@
-import { gql, MutationHookOptions, useMutation } from "@apollo/client";
-import { AuthResponse, MutationLoginArgs } from "../gql/graphql";
+import { gql, MutationHookOptions, useMutation } from '@apollo/client';
+import { AuthResponse, MutationLoginArgs } from '../gql/graphql';
 
 const MUTATION = gql`
   mutation Mutation($username: String!, $password: String!) {
