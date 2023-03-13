@@ -22,7 +22,7 @@ export type AuthResponse = {
 
 export type Column = {
   __typename?: 'Column';
-  _id: Scalars['String'];
+  id: Scalars['String'];
   name: Scalars['String'];
   table: Table;
 };
@@ -109,9 +109,9 @@ export type MutationUpdateTableArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  column?: Maybe<Array<Maybe<Column>>>;
+  column: Array<Maybe<Column>>;
   me?: Maybe<User>;
-  row?: Maybe<Array<Maybe<Row>>>;
+  row: Array<Maybe<Row>>;
   tables: Array<Maybe<Table>>;
 };
 
@@ -122,26 +122,26 @@ export type QueryTablesArgs = {
 
 export type Row = {
   __typename?: 'Row';
-  _id: Scalars['String'];
+  id: Scalars['String'];
   table: Table;
   values: Scalars['String'];
 };
 
 export type Subscription = {
   __typename?: 'Subscription';
-  addedColumn?: Maybe<Column>;
-  addedRow?: Maybe<Row>;
-  addedTable?: Maybe<Table>;
-  deletedColumn?: Maybe<Scalars['Boolean']>;
-  deletedRow?: Maybe<Scalars['Boolean']>;
-  deletedTable?: Maybe<Scalars['Boolean']>;
+  addedColumn: Column;
+  addedRow: Row;
+  addedTable: Table;
+  deletedColumn: Scalars['Boolean'];
+  deletedRow: Scalars['Boolean'];
+  deletedTable: Scalars['Boolean'];
 };
 
 export type Table = {
   __typename?: 'Table';
-  _id: Scalars['String'];
   columns: Array<Maybe<Column>>;
   description?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
   name: Scalars['String'];
   rows: Array<Maybe<Row>>;
 };
@@ -165,5 +165,17 @@ export type MutationMutationVariables = Exact<{
 
 export type MutationMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthResponse', token?: string | null, user?: { __typename?: 'User', id: string, username: string } | null } };
 
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, username: string } | null };
+
+export type TableQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TableQuery = { __typename?: 'Query', tables: Array<{ __typename?: 'Table', id: string, name: string, description?: string | null } | null> };
+
 
 export const MutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Mutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"username"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"username"},"value":{"kind":"Variable","name":{"kind":"Name","value":"username"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}},{"kind":"Field","name":{"kind":"Name","value":"token"}}]}}]}}]} as unknown as DocumentNode<MutationMutation, MutationMutationVariables>;
+export const MeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]} as unknown as DocumentNode<MeQuery, MeQueryVariables>;
+export const TableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Table"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tables"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<TableQuery, TableQueryVariables>;
