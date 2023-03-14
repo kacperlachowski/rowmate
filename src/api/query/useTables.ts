@@ -11,7 +11,7 @@ const QUERY = gql`
   }
 `;
 
-type Data = {
+export type Data = {
   tables: Table[];
 };
 
