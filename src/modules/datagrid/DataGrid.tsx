@@ -99,8 +99,13 @@ const DataGrid = <T,>({
                 />
               </TableCell>
             )}
-            {columns.map(({ name }) => (
-              <TableCell key={name}>{name}</TableCell>
+            {columns.map(({ name, type, renderHeader }) => (
+              <TableCell
+                key={name}
+                align={type === 'component' ? 'center' : undefined}
+              >
+                {renderHeader ? renderHeader() : name}
+              </TableCell>
             ))}
           </TableRow>
         );
@@ -126,6 +131,13 @@ const DataGrid = <T,>({
               const value = getValue(item);
               const key = `${name}-${id}`;
 
+              if (type === 'component') {
+                return (
+                  <TableCell align="center" size="small" key={key}>
+                    {value}
+                  </TableCell>
+                );
+              }
               if (type === 'boolean') {
                 return (
                   <TableCell key={key}>
