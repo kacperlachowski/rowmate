@@ -17,10 +17,6 @@ export type ColumnType<T> =
       type: 'boolean';
       getValue: (item: DataItem<T>) => boolean;
     };
-// | {
-//     type: 'component';
-//     renderCell: (item: DataItem<T>) => JSX.Element;
-//   }
 
 export type Column<T> = {
   name: string;
@@ -32,4 +28,5 @@ export type DataGridProps<T> = {
   data: DataItem<T>[];
   columns: Column<T>[];
   onBottom?: (index: number) => void;
+  selectable?: boolean;
 };

@@ -1,5 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { Checkbox, LinearProgress } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import { Checkbox, Chip, LinearProgress } from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -10,7 +12,12 @@ import TableBodyComponent from './components/TableBodyComponent';
 import TableComponent from './components/TableComponent';
 import { DataGridProps, DataItem, VirtuosoItemProps } from './types';
 
-const DataGrid = <T,>({ data, columns, onBottom }: DataGridProps<T>) => {
+const DataGrid = <T,>({
+  data,
+  columns,
+  onBottom,
+  selectable,
+}: DataGridProps<T>) => {
   const [rows] = useState(data);
   const [selected, setSelected] = useState<readonly string[]>([]);
 
@@ -77,19 +84,21 @@ const DataGrid = <T,>({ data, columns, onBottom }: DataGridProps<T>) => {
       fixedHeaderContent={() => {
         return (
           <TableRow>
-            <TableCell padding="checkbox">
-              <Checkbox
-                color="primary"
-                indeterminate={
-                  selected.length > 0 && selected.length < rows.length
-                }
-                checked={rows.length > 0 && selected.length === rows.length}
-                onChange={handleSelectAllClick}
-                inputProps={{
-                  'aria-label': 'select all desserts',
-                }}
-              />
-            </TableCell>
+            {selectable && (
+              <TableCell padding="checkbox">
+                <Checkbox
+                  color="primary"
+                  indeterminate={
+                    selected.length > 0 && selected.length < rows.length
+                  }
+                  checked={rows.length > 0 && selected.length === rows.length}
+                  onChange={handleSelectAllClick}
+                  inputProps={{
+                    'aria-label': 'select all desserts',
+                  }}
+                />
+              </TableCell>
+            )}
             {columns.map(({ name }) => (
               <TableCell key={name}>{name}</TableCell>
             ))}
@@ -102,18 +111,37 @@ const DataGrid = <T,>({ data, columns, onBottom }: DataGridProps<T>) => {
 
         return (
           <>
-            <TableCell padding="checkbox">
-              <Checkbox
-                color="primary"
-                checked={isItemSelected}
-                inputProps={{
-                  'aria-labelledby': id,
-                }}
-              />
-            </TableCell>
-            {columns.map(({ getValue, name }) => (
-              <TableCell key={`${name}-${id}`}>{getValue(item)}</TableCell>
-            ))}
+            {selectable && (
+              <TableCell padding="checkbox">
+                <Checkbox
+                  color="primary"
+                  checked={isItemSelected}
+                  inputProps={{
+                    'aria-labelledby': id,
+                  }}
+                />
+              </TableCell>
+            )}
+            {columns.map(({ getValue, name, type }) => {
+              const value = getValue(item);
+              const key = `${name}-${id}`;
+
+              if (type === 'boolean') {
+                return (
+                  <TableCell key={key}>
+                    {value ? <CheckIcon /> : <CloseIcon />}
+                  </TableCell>
+                );
+              }
+              if (type === 'number') {
+                return (
+                  <TableCell key={key}>
+                    <Chip label={value} />
+                  </TableCell>
+                );
+              }
+              return <TableCell key={key}>{value}</TableCell>;
+            })}
           </>
         );
       }}
