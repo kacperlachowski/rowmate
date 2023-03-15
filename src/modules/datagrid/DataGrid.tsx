@@ -129,14 +129,18 @@ const DataGrid = <T,>({
               if (type === 'boolean') {
                 return (
                   <TableCell key={key}>
-                    {value ? <CheckIcon /> : <CloseIcon />}
+                    {value ? (
+                      <CheckIcon fontSize="small" />
+                    ) : (
+                      <CloseIcon fontSize="small" />
+                    )}
                   </TableCell>
                 );
               }
               if (type === 'number') {
                 return (
                   <TableCell key={key}>
-                    <Chip label={value} />
+                    <Chip size="small" label={value} />
                   </TableCell>
                 );
               }
