@@ -18,12 +18,12 @@ import { AuthProvider } from './context/AuthProvider';
 import './index.css';
 
 const httpLink = new HttpLink({
-  uri: process.env.API_URL,
+  uri: `http://${process.env.API_URL}`,
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: process.env.WS_URL ?? '',
+    url: `ws://${process.env.API_URL}`,
   })
 );
 
@@ -57,7 +57,19 @@ const splitLink = split(
 
 const client = new ApolloClient({
   link: authLink.concat(splitLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          tables: {
+            merge(_existing, incoming) {
+              return incoming;
+            },
+          },
+        },
+      },
+    },
+  }),
 });
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

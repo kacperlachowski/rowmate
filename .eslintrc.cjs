@@ -20,6 +20,7 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
+    'react/no-unstable-nested-components': 0,
     'react/jsx-props-no-spreading': 0,
     'react/react-in-jsx-scope': 0,
     'react/function-component-definition': [

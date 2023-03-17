@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { Checkbox, Chip, LinearProgress } from '@mui/material';
@@ -18,14 +17,13 @@ const DataGrid = <T,>({
   onBottom,
   selectable,
 }: DataGridProps<T>) => {
-  const [rows] = useState(data);
   const [selected, setSelected] = useState<readonly string[]>([]);
 
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((row) => row.id);
+      const newSelected = data.map((row) => row.id);
       setSelected(newSelected);
       return;
     }
@@ -33,6 +31,7 @@ const DataGrid = <T,>({
   };
 
   const handleClick = (_event: React.MouseEvent<unknown>, name: string) => {
+    if (!selectable) return;
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
 
@@ -55,7 +54,7 @@ const DataGrid = <T,>({
   return (
     <TableVirtuoso
       useWindowScroll
-      data={rows}
+      data={data}
       endReached={onBottom}
       overscan={200}
       components={{
@@ -72,7 +71,7 @@ const DataGrid = <T,>({
               hover
               onClick={(event) => handleClick(event, item.id)}
               selected={isItemSelected}
-              role="checkbox"
+              role={selectable ? 'checkbox' : undefined}
               aria-checked={isItemSelected}
               tabIndex={-1}
             />
@@ -89,9 +88,9 @@ const DataGrid = <T,>({
                 <Checkbox
                   color="primary"
                   indeterminate={
-                    selected.length > 0 && selected.length < rows.length
+                    selected.length > 0 && selected.length < data.length
                   }
-                  checked={rows.length > 0 && selected.length === rows.length}
+                  checked={data.length > 0 && selected.length === data.length}
                   onChange={handleSelectAllClick}
                   inputProps={{
                     'aria-label': 'select all desserts',

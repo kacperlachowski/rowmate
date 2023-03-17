@@ -6,7 +6,13 @@ type Props = {
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 };
 const ActionButton = ({ icon: Icon, onClick: handleClick }: Props) => (
-  <IconButton size="small" onClick={handleClick}>
+  <IconButton
+    size="small"
+    onClick={(e) => {
+      e.preventDefault();
+      handleClick?.(e);
+    }}
+  >
     <Icon />
   </IconButton>
 );
