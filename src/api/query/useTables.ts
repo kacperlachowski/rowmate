@@ -1,9 +1,13 @@
 import { gql, QueryHookOptions, useQuery } from '@apollo/client';
-import { Table, TableFilters } from 'api/gql/graphql';
+import { Subscription, Table, QueryTableCountArgs } from 'api/gql/graphql';
+import { useCallback, useEffect } from 'react';
+import { SUBSCRIPTION as SUBSCRIPTION_CREATED_TABLE } from '../subscription/createdTable';
+import { SUBSCRIPTION as SUBSCRIPTION_DELETED_TABLE } from '../subscription/deletedTable';
+import { SUBSCRIPTION as SUBSCRIPTION_UPDATED_TABLE } from '../subscription/updatedTable';
 
 const QUERY = gql`
-  query Table {
-    tables {
+  query Table($filters: TableFilters) {
+    tables(filters: $filters) {
       id
       name
       description
@@ -11,12 +15,103 @@ const QUERY = gql`
   }
 `;
 
-type Data = {
+export type Data = {
   tables: Table[];
 };
 
-const useTables = (options?: QueryHookOptions<Data, TableFilters>) => {
-  return useQuery<Data, TableFilters>(QUERY, options);
+const useTables = (options?: QueryHookOptions<Data, QueryTableCountArgs>) => {
+  const { subscribeToMore, fetchMore, ...query } = useQuery<
+    Data,
+    QueryTableCountArgs
+  >(QUERY, options);
+
+  const handleGetMore = useCallback(
+    (offset: number) => {
+      fetchMore({
+        variables: {
+          filters: {
+            first: 25,
+            offset,
+          },
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
+          return {
+            ...prev,
+            tables: [...prev.tables, ...fetchMoreResult.tables],
+          };
+        },
+      });
+    },
+    [fetchMore]
+  );
+
+  useEffect(() => {
+    subscribeToMore<{ addedTable: Subscription['addedTable'] }>({
+      document: SUBSCRIPTION_CREATED_TABLE,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        if (
+          prev.tables.findIndex(
+            (item) => item.id === subscriptionData.data.addedTable.id
+          ) > -1
+        ) {
+          return prev;
+        }
+
+        const result = {
+          ...prev,
+          tables: [subscriptionData.data.addedTable, ...prev.tables],
+        };
+
+        return result;
+      },
+    });
+
+    subscribeToMore<{ deletedTable: Subscription['deletedTable'] }>({
+      document: SUBSCRIPTION_DELETED_TABLE,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data || !prev?.tables) return prev;
+
+        const result = {
+          ...prev,
+          tables: [
+            ...prev.tables.filter(
+              (item) => item.id !== subscriptionData.data.deletedTable
+            ),
+          ],
+        };
+
+        return result;
+      },
+    });
+    subscribeToMore<{ updatedTable: Subscription['updatedTable'] }>({
+      document: SUBSCRIPTION_UPDATED_TABLE,
+      updateQuery: (prev, { subscriptionData }) => {
+        const updatedTable = subscriptionData.data?.updatedTable;
+        if (!updatedTable) return prev;
+
+        const index = prev.tables.findIndex(
+          (table) => table.id === updatedTable.id
+        );
+
+        if (index === -1) return prev;
+
+        const result = {
+          ...prev,
+          tables: [
+            ...prev.tables.slice(0, index),
+            updatedTable,
+            ...prev.tables.slice(index + 1),
+          ],
+        };
+
+        return result;
+      },
+    });
+  }, [subscribeToMore]);
+
+  return { ...query, getMore: handleGetMore };
 };
 
 export default useTables;

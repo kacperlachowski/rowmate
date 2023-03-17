@@ -1,14 +1,14 @@
-import type { CodegenConfig } from "@graphql-codegen/cli";
-import dotenv from "dotenv";
+import type { CodegenConfig } from '@graphql-codegen/cli';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 const config: CodegenConfig = {
-  schema: process.env.API_URL,
-  documents: ["src/**/*.tsx", "src/**/*.ts"],
+  schema: `http://${process.env.API_URL}`,
+  documents: ['src/**/*.tsx', 'src/**/*.ts'],
   generates: {
-    "./src/api/gql/": {
-      preset: "client",
+    './src/api/gql/': {
+      preset: 'client',
     },
   },
 };
