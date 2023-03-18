@@ -28,11 +28,6 @@ const Home = () => {
   const [mutationAddTable] = useCreateTableMutation();
 
   const { loading, getMore } = useTables({
-    variables: {
-      filters: {
-        first: 25,
-      },
-    },
     onCompleted: (data) => {
       setTables(data.tables);
     },

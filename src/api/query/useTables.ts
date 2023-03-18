@@ -5,7 +5,7 @@ import { SUBSCRIPTION as SUBSCRIPTION_CREATED_TABLE } from '../subscription/crea
 import { SUBSCRIPTION as SUBSCRIPTION_DELETED_TABLE } from '../subscription/deletedTable';
 import { SUBSCRIPTION as SUBSCRIPTION_UPDATED_TABLE } from '../subscription/updatedTable';
 
-const QUERY = gql`
+export const QUERY = gql`
   query Table($filters: TableFilters) {
     tables(filters: $filters) {
       id
@@ -23,7 +23,16 @@ const useTables = (options?: QueryHookOptions<Data, QueryTableCountArgs>) => {
   const { subscribeToMore, fetchMore, ...query } = useQuery<
     Data,
     QueryTableCountArgs
-  >(QUERY, options);
+  >(QUERY, {
+    ...options,
+    variables: {
+      ...options?.variables,
+      filters: {
+        first: 25,
+        ...options?.variables?.filters,
+      },
+    },
+  });
 
   const handleGetMore = useCallback(
     (offset: number) => {
@@ -85,6 +94,7 @@ const useTables = (options?: QueryHookOptions<Data, QueryTableCountArgs>) => {
         return result;
       },
     });
+
     subscribeToMore<{ updatedTable: Subscription['updatedTable'] }>({
       document: SUBSCRIPTION_UPDATED_TABLE,
       updateQuery: (prev, { subscriptionData }) => {
@@ -97,15 +107,22 @@ const useTables = (options?: QueryHookOptions<Data, QueryTableCountArgs>) => {
 
         if (index === -1) return prev;
 
+        // const result = {
+        //   ...prev,
+        //   tables: [
+        //     ...prev.tables.slice(0, index),
+        //     updatedTable,
+        //     ...prev.tables.slice(index + 1),
+        //   ],
+        // };
         const result = {
           ...prev,
           tables: [
             ...prev.tables.slice(0, index),
-            updatedTable,
+            updatedTable as Table,
             ...prev.tables.slice(index + 1),
           ],
         };
-
         return result;
       },
     });
