@@ -2,11 +2,15 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import {
   Button,
+  InputAdornment,
   LinearProgress,
+  MenuItem,
   MenuList,
+  TextField,
   Typography,
   useMediaQuery,
 } from '@mui/material';
@@ -15,10 +19,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import { useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import { useCallback, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { ChangeEvent, useCallback, useRef, useState } from 'react';
+import { Link, Outlet } from 'react-router-dom';
+import { Virtuoso } from 'react-virtuoso';
 import useTables from '../../api/query/useTables';
 import useAuth from '../../hooks/useAuth';
 import Footer from '../Footer';
@@ -41,9 +48,26 @@ const Layout = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [open, setOpen] = useState(false);
   const [paths, setPaths] = useState<Path[] | null>(null);
+  const [tableName, setTableName] = useState('');
+  const [controller, setController] = useState(new AbortController());
+
+  const handleChangeTableName = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      controller.abort();
+      setController(new AbortController());
+      setTableName(e.target.value);
+    },
+    [controller]
+  );
 
   const { logout } = useAuth();
-  const { loading } = useTables({
+  const { getMore, loading } = useTables({
+    context: { signal: controller.signal },
+    variables: {
+      filters: {
+        search: tableName.length ? tableName : undefined,
+      },
+    },
     skip: !open,
     onCompleted: (data) => {
       if (data.tables.length) {
@@ -72,6 +96,8 @@ const Layout = () => {
     }
   }, [isMobile, handleDrawerClose]);
 
+  const menuListRef = useRef<HTMLUListElement | null>(null);
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -87,7 +113,7 @@ const Layout = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Row<b>m</b>ate
+            Rowmate
           </Typography>
           <Button color="inherit" onClick={logout}>
             Logout
@@ -119,9 +145,67 @@ const Layout = () => {
         <Divider />
         <MenuList>
           <Paths onClick={handleClickMenuItem} paths={staticPaths} />
-          <Divider />
-          {loading && <LinearProgress />}
-          {paths && <Paths onClick={handleClickMenuItem} paths={paths} />}
+        </MenuList>
+        <Divider />
+        <Box sx={{ p: 0 }}>
+          <TextField
+            value={tableName}
+            onChange={handleChangeTableName}
+            placeholder="Search"
+            variant="filled"
+            hiddenLabel
+            fullWidth
+            role="search"
+            size="small"
+            sx={{ borderRadius: 0 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
+        {loading && <LinearProgress />}
+        <Divider />
+        <MenuList
+          sx={{
+            overflowY: 'auto',
+            paddingTop: 0,
+            '&::-webkit-scrollbar': {
+              width: '5px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: theme.palette.primary.main,
+              borderRadius: '10px',
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: theme.palette.primary[theme.palette.mode],
+            },
+          }}
+          ref={menuListRef}
+        >
+          <Virtuoso
+            customScrollParent={menuListRef.current ?? undefined}
+            data={paths ?? []}
+            endReached={getMore}
+            itemContent={(_index, { icon: Icon, ...item }) => {
+              return (
+                <MenuItem
+                  onClick={handleClickMenuItem}
+                  key={item.id}
+                  to={item.path}
+                  component={Link}
+                >
+                  <ListItemIcon>
+                    <Icon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>{item.label}</ListItemText>
+                </MenuItem>
+              );
+            }}
+          />
         </MenuList>
         <Footer />
       </Drawer>
