@@ -6,11 +6,19 @@ import { SUBSCRIPTION as SUBSCRIPTION_DELETED_TABLE } from '../subscription/dele
 import { SUBSCRIPTION as SUBSCRIPTION_UPDATED_TABLE } from '../subscription/updatedTable';
 
 export const QUERY = gql`
-  query Table($filters: TableFilters) {
+  query Table($filters: TableFilters, $withContext: Boolean!) {
     tables(filters: $filters) {
       id
       name
       description
+      columns @include(if: $withContext) {
+        id
+        name
+      }
+      rows @include(if: $withContext) {
+        id
+        values
+      }
     }
   }
 `;
@@ -19,13 +27,19 @@ export type Data = {
   tables: Table[];
 };
 
-const useTables = (options?: QueryHookOptions<Data, QueryTableCountArgs>) => {
+const useTables = (
+  options?: QueryHookOptions<
+    Data,
+    QueryTableCountArgs & { withContext?: boolean }
+  >
+) => {
   const { subscribeToMore, fetchMore, ...query } = useQuery<
     Data,
     QueryTableCountArgs
   >(QUERY, {
     ...options,
     variables: {
+      withContext: false,
       ...options?.variables,
       filters: {
         first: 25,
@@ -107,14 +121,6 @@ const useTables = (options?: QueryHookOptions<Data, QueryTableCountArgs>) => {
 
         if (index === -1) return prev;
 
-        // const result = {
-        //   ...prev,
-        //   tables: [
-        //     ...prev.tables.slice(0, index),
-        //     updatedTable,
-        //     ...prev.tables.slice(index + 1),
-        //   ],
-        // };
         const result = {
           ...prev,
           tables: [

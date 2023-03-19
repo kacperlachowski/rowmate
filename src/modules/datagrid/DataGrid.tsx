@@ -53,6 +53,9 @@ const DataGrid = <T,>({
 
   return (
     <TableVirtuoso
+      style={{
+        overflowY: 'hidden',
+      }}
       useWindowScroll
       data={data}
       endReached={onBottom}

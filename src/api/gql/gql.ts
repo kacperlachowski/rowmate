@@ -13,13 +13,15 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n  mutation CreateColumn($tableId: String!, $name: String!, $type: ColumnType!) {\n    createColumn(tableId: $tableId, name: $name, type: $type) {\n      id\n      name\n    }\n  }\n": types.CreateColumnDocument,
     "\n  mutation CreateTable($name: String!, $description: String) {\n    createTable(name: $name, description: $description) {\n      id\n    }\n  }\n": types.CreateTableDocument,
     "\n  mutation DeleteTable($id: String!) {\n    deleteTable(id: $id)\n  }\n": types.DeleteTableDocument,
     "\n  mutation Mutation($username: String!, $password: String!) {\n    login(username: $username, password: $password) {\n      user {\n        id\n        username\n      }\n      token\n    }\n  }\n": types.MutationDocument,
     "\n  mutation UpdateTable($id: String!, $name: String, $description: String) {\n    updateTable(id: $id, name: $name, description: $description) {\n      id\n    }\n  }\n": types.UpdateTableDocument,
+    "\n  query Columns($filters: TableFiltersFindOne!) {\n    table(filters: $filters) {\n      id\n      name\n      columns {\n        id\n        name\n      }\n    }\n  }\n": types.ColumnsDocument,
     "\n  query Me {\n    me {\n      id\n      username\n    }\n  }\n": types.MeDocument,
-    "\n  query Table($filters: TableFilters) {\n    tables(filters: $filters) {\n      id\n      name\n      description\n    }\n  }\n": types.TableDocument,
-    "\n      query Table($filters: TableFilters) {\n        tables(filters: $filters) {\n          id\n          name\n          description\n        }\n      }\n    ": types.TableDocument,
+    "\n  query Table($filters: TableFilters, $withContext: Boolean!) {\n    tables(filters: $filters) {\n      id\n      name\n      description\n      columns @include(if: $withContext) {\n        id\n        name\n      }\n      rows @include(if: $withContext) {\n        id\n        values\n      }\n    }\n  }\n": types.TableDocument,
+    "\n  subscription AddedColumn {\n    addedColumn {\n      name\n      id\n    }\n  }\n": types.AddedColumnDocument,
     "\n  subscription AddedTable {\n    addedTable {\n      id\n      name\n      description\n    }\n  }\n": types.AddedTableDocument,
     "\n  subscription DeletedTable {\n    deletedTable\n  }\n": types.DeletedTableDocument,
     "\n  subscription UpdatedTable {\n    updatedTable {\n      id\n      name\n      description\n    }\n  }\n": types.UpdatedTableDocument,
@@ -42,6 +44,10 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation CreateColumn($tableId: String!, $name: String!, $type: ColumnType!) {\n    createColumn(tableId: $tableId, name: $name, type: $type) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation CreateColumn($tableId: String!, $name: String!, $type: ColumnType!) {\n    createColumn(tableId: $tableId, name: $name, type: $type) {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation CreateTable($name: String!, $description: String) {\n    createTable(name: $name, description: $description) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation CreateTable($name: String!, $description: String) {\n    createTable(name: $name, description: $description) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -58,15 +64,19 @@ export function graphql(source: "\n  mutation UpdateTable($id: String!, $name: S
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query Columns($filters: TableFiltersFindOne!) {\n    table(filters: $filters) {\n      id\n      name\n      columns {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query Columns($filters: TableFiltersFindOne!) {\n    table(filters: $filters) {\n      id\n      name\n      columns {\n        id\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query Me {\n    me {\n      id\n      username\n    }\n  }\n"): (typeof documents)["\n  query Me {\n    me {\n      id\n      username\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Table($filters: TableFilters) {\n    tables(filters: $filters) {\n      id\n      name\n      description\n    }\n  }\n"): (typeof documents)["\n  query Table($filters: TableFilters) {\n    tables(filters: $filters) {\n      id\n      name\n      description\n    }\n  }\n"];
+export function graphql(source: "\n  query Table($filters: TableFilters, $withContext: Boolean!) {\n    tables(filters: $filters) {\n      id\n      name\n      description\n      columns @include(if: $withContext) {\n        id\n        name\n      }\n      rows @include(if: $withContext) {\n        id\n        values\n      }\n    }\n  }\n"): (typeof documents)["\n  query Table($filters: TableFilters, $withContext: Boolean!) {\n    tables(filters: $filters) {\n      id\n      name\n      description\n      columns @include(if: $withContext) {\n        id\n        name\n      }\n      rows @include(if: $withContext) {\n        id\n        values\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n      query Table($filters: TableFilters) {\n        tables(filters: $filters) {\n          id\n          name\n          description\n        }\n      }\n    "): (typeof documents)["\n      query Table($filters: TableFilters) {\n        tables(filters: $filters) {\n          id\n          name\n          description\n        }\n      }\n    "];
+export function graphql(source: "\n  subscription AddedColumn {\n    addedColumn {\n      name\n      id\n    }\n  }\n"): (typeof documents)["\n  subscription AddedColumn {\n    addedColumn {\n      name\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
