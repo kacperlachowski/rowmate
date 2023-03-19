@@ -1,4 +1,4 @@
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {
   Avatar,
   Button,
@@ -10,24 +10,27 @@ import {
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import useLoginMutation from '../api/mutation/login';
+import useSignUpMutation from '../api/mutation/signup';
 import useAlert from '../hooks/useAlert';
 import useAuth from '../hooks/useAuth';
 
-const SignIn = () => {
+const SignUp = () => {
   const { login } = useAuth();
   const alert = useAlert();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [values, setValues] = useState({
+    username: '',
+    password: '',
+    repeatPassword: '',
+  });
 
-  const [loginMutation, { loading }] = useLoginMutation({
+  const [signUpMutation, { loading }] = useSignUpMutation({
     onCompleted: (data) => {
-      if (data.login.token) {
-        login(data.login);
+      if (data.signup.token) {
+        login(data.signup);
         navigate(from, { replace: true });
         alert('Welcome', 'success');
       }
@@ -37,31 +40,37 @@ const SignIn = () => {
     },
   });
 
-  const handleChangeUsername = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setUsername(e.target.value);
-    },
-    []
-  );
-
-  const handleChangePassword = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setPassword(e.target.value);
-    },
-    []
-  );
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }, []);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      loginMutation({
+
+      if (values.username.length < 5) {
+        alert('The username must be at least 5 characters long', 'error');
+        return;
+      }
+
+      if (values.password.length < 5) {
+        alert('The password must be at least 5 characters long', 'error');
+        return;
+      }
+
+      if (values.password !== values.repeatPassword) {
+        alert('Passwords do not match. Please try again.', 'error');
+        return;
+      }
+
+      signUpMutation({
         variables: {
-          username,
-          password,
+          username: values.username,
+          password: values.password,
         },
       });
     },
-    [loginMutation, username, password]
+    [signUpMutation, values, alert]
   );
 
   return (
@@ -70,6 +79,7 @@ const SignIn = () => {
       <Paper
         elevation={1}
         component="form"
+        autoComplete="off"
         onSubmit={handleSubmit}
         sx={{
           m: 2,
@@ -85,10 +95,10 @@ const SignIn = () => {
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-          <LockOutlinedIcon />
+          <AccountCircleIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Sign up
         </Typography>
         <TextField
           autoFocus
@@ -96,8 +106,8 @@ const SignIn = () => {
           name="username"
           placeholder="Username"
           label="Username"
-          value={username}
-          onChange={handleChangeUsername}
+          value={values.username}
+          onChange={handleChange}
           size="small"
           fullWidth
         />
@@ -106,20 +116,30 @@ const SignIn = () => {
           name="password"
           placeholder="Password"
           label="Password"
-          value={password}
-          onChange={handleChangePassword}
+          value={values.password}
+          onChange={handleChange}
+          size="small"
+          fullWidth
+        />
+        <TextField
+          type="password"
+          name="repeatPassword"
+          placeholder="Repeat password"
+          label="Repeat password"
+          value={values.repeatPassword}
+          onChange={handleChange}
           size="small"
           fullWidth
         />
         <Button type="submit" variant="contained" fullWidth>
-          Login
+          Sign in
         </Button>
-        <MUILink component={Link} to="/signup" variant="body2">
-          Ready to Rowmate? Create your account
+        <MUILink component={Link} to="/signin" variant="body2">
+          Sign in
         </MUILink>
       </Paper>
     </>
   );
 };
 
-export default SignIn;
+export default SignUp;

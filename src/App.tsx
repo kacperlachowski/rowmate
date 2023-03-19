@@ -3,6 +3,7 @@ import Table from './components/Table';
 import Home from './components/Home';
 import Layout from './components/layout';
 import SignIn from './components/SignIn';
+import SignUp from './components/SignUp';
 import Missing from './components/Missing';
 import RequireAuth from './components/RequireAuth';
 import Unauthorized from './components/Unauthorized';
@@ -12,6 +13,7 @@ const App = () => {
     <Routes>
       {/* public */}
       <Route path="signin" element={<SignIn />} />
+      <Route path="signup" element={<SignUp />} />
       <Route path="unauthorized" element={<Unauthorized />} />
 
       {/* protected */}
