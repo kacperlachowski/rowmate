@@ -12,6 +12,7 @@ import useCreateTableMutation from '../api/mutation/createTable';
 import useDeleteTableMutation from '../api/mutation/deleteTable';
 import useUpdateTableMutation from '../api/mutation/updateTable';
 import useTables from '../api/query/useTables';
+import useAlert from '../hooks/useAlert';
 import DataGrid, { Columns } from '../modules/datagrid';
 import ActionButton from './ActionButton';
 import ConfirmationDialog, {
@@ -20,12 +21,22 @@ import ConfirmationDialog, {
 import TableFormDialog, { TableFormDialogHandle } from './TableFormDialog';
 
 const Home = () => {
+  const alert = useAlert();
   const [tables, setTables] = useState<Table[] | null>(null);
   const deleteConfirmationDialog = useRef<ConfirmationDialogHandle>(null);
   const editOrAddRowDialog = useRef<TableFormDialogHandle>(null);
-  const [mutationEditTable] = useUpdateTableMutation();
-  const [mutationDeleteTable] = useDeleteTableMutation();
-  const [mutationAddTable] = useCreateTableMutation();
+  const [mutationEditTable] = useUpdateTableMutation({
+    onCompleted: () => alert('Saved!', 'success'),
+    onError: (e) => alert(e.message, 'error'),
+  });
+  const [mutationDeleteTable] = useDeleteTableMutation({
+    onCompleted: () => alert('Deleted!', 'success'),
+    onError: (e) => alert(e.message, 'error'),
+  });
+  const [mutationAddTable] = useCreateTableMutation({
+    onCompleted: () => alert('Added!', 'success'),
+    onError: (e) => alert(e.message, 'error'),
+  });
 
   const { loading, getMore } = useTables({
     onCompleted: (data) => {
