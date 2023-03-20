@@ -9,13 +9,14 @@ import { setContext } from '@apollo/client/link/context';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
+import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { getPersistUser } from './utils/user-state';
 import App from './App';
 import { AuthProvider } from './context/AuthProvider';
 import './index.css';
+import { getPersistUser } from './utils/user-state';
 
 const httpLink = new HttpLink({
   uri: `http://${process.env.API_URL}`,
@@ -75,13 +76,15 @@ const client = new ApolloClient({
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/*" element={<App />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
+      <SnackbarProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/*" element={<App />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </SnackbarProvider>
     </ApolloProvider>
   </React.StrictMode>
 );
