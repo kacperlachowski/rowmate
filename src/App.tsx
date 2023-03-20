@@ -6,7 +6,6 @@ import RequireAuth from './components/RequireAuth';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import Table from './components/Table';
-import Unauthorized from './components/Unauthorized';
 import ThemeModeProvider from './context/ThemeProvider';
 
 const App = () => {
@@ -16,7 +15,6 @@ const App = () => {
         {/* public */}
         <Route path="signin" element={<SignIn />} />
         <Route path="signup" element={<SignUp />} />
-        <Route path="unauthorized" element={<Unauthorized />} />
 
         {/* protected */}
         <Route path="/" element={<Layout />}>
