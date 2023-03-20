@@ -1,3 +1,5 @@
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HomeIcon from '@mui/icons-material/Home';
@@ -23,10 +25,11 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import { ChangeEvent, useCallback, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useContext, useRef, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
 import useTables from '../../api/query/useTables';
+import { ThemeModeContext } from '../../context/ThemeProvider';
 import useAuth from '../../hooks/useAuth';
 import Footer from '../Footer';
 import { AppBar, DrawerHeader, Main } from './components';
@@ -98,6 +101,8 @@ const Layout = () => {
 
   const menuListRef = useRef<HTMLUListElement | null>(null);
 
+  const { toggleColorMode } = useContext(ThemeModeContext);
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -115,9 +120,22 @@ const Layout = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Rowmate
           </Typography>
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
+          <Box>
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={toggleColorMode}
+              color="inherit"
+            >
+              {theme.palette.mode === 'dark' ? (
+                <Brightness7Icon />
+              ) : (
+                <Brightness4Icon />
+              )}
+            </IconButton>
+            <Button color="inherit" onClick={logout}>
+              Logout
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -179,9 +197,6 @@ const Layout = () => {
             '&::-webkit-scrollbar-thumb': {
               backgroundColor: theme.palette.primary.main,
               borderRadius: '10px',
-            },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: theme.palette.primary[theme.palette.mode],
             },
           }}
           ref={menuListRef}
