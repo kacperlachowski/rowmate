@@ -10,6 +10,7 @@ import useRows from '../api/query/useRows';
 import DataGrid, { Column, Columns } from '../modules/datagrid';
 import AddColumnDialog, { AddColumnDialogHandle } from './AddColumnDialog';
 import AddRowDialog, { AddRowDialogHandle, Field } from './AddRowDialog';
+import useAlert from '../hooks/useAlert';
 
 const getColumnType = (
   columnType?: ColumnType
@@ -32,6 +33,7 @@ const columnOfId: Column<{ id: string } & object> = {
 type Rows = ({ id: string } & Record<string, string | number | boolean>)[];
 
 const Table = () => {
+  const alert = useAlert();
   const { id } = useParams<RouteParams>();
   const [name, setName] = useState('');
   const [columns, setColumns] = useState<Columns<any>>([]);
@@ -39,8 +41,14 @@ const Table = () => {
   const addColumnDialog = useRef<AddColumnDialogHandle | null>(null);
   const addRowDialog = useRef<AddRowDialogHandle | null>(null);
 
-  const [createColumn] = useCreateColumnMutation();
-  const [createRow] = useCreateRowMutation();
+  const [createColumn] = useCreateColumnMutation({
+    onCompleted: () => alert('Added column!', 'success'),
+    onError: (e) => alert(e.message, 'error'),
+  });
+  const [createRow] = useCreateRowMutation({
+    onCompleted: () => alert('Added row!', 'success'),
+    onError: (e) => alert(e.message, 'error'),
+  });
 
   useColumns(id ?? '', {
     onCompleted: (data) => {
