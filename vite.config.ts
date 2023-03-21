@@ -16,4 +16,8 @@ export default defineConfig({
       'process.env.WS_URL': JSON.stringify(process.env.WS_URL),
     }),
   ],
+  server: {
+    host: true,
+    port: 8000,
+  },
 });
