@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      - .:/core
+    ports:
+      - 8000:8000
+      - 4173:4173
+      - 5173:5173
+    image: app:react
+    container_name: react_container
+    command: npm run preview
